@@ -1,11 +1,15 @@
 /**************************************************
-*             author : siddharth                  *
-**************************************************/ 
-
+ *             author : siddharth                  *
+ **************************************************/
+const express = require("express");
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../../models/User");
+var bodyParser = require("body-parser");
+const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const Joi = require("@hapi/joi");
 
@@ -19,9 +23,12 @@ const registerSchema = Joi.object({
 
 //SIGNUP USER
 router.post("/register", async (req, res) => {
+  const b = req.body;
+  console.log(b);
+
   //CHECKING IF USER EMAIL ALREADY EXISTS
   const emailExist = await User.findOne({ email: req.body.email });
-  // IF EMAIL EXIST THEN RETURN
+  //IF EMAIL EXIST THEN RETURN
   if (emailExist) {
     res.status(400).send("Email already exists");
     return;
@@ -33,7 +40,7 @@ router.post("/register", async (req, res) => {
 
   //ON PROCESS OF ADDING NEW USER
 
-  const user = new User({
+  var user = new User({
     fname: req.body.fname,
     lname: req.body.lname,
     email: req.body.email,
