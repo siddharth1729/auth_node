@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/siddharth1729/auth_node/issues"
   },
-  "homepage": "https://github.com/siddharth1729/auth_node#readme"
+  "homepage": "https://github.com/siddharth1729/auth_node#readme",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.5.2"
+  }
 }
