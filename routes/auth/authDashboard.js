@@ -1,3 +1,6 @@
+/**************************************************
+ *             author : siddharth                  *
+ ****************************************************/
 const User = require("../../models/User");
 const verify = require("./authVerify");
 
