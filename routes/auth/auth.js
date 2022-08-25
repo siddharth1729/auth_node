@@ -13,6 +13,8 @@ app.use(bodyParser.json());
 
 const Joi = require("@hapi/joi");
 
+TOKEN_SECRET = "hcjsdbshhsbdcjbsjjbsbbdibjnssxjudqwnanjnxjsjxcceuhfbdsqklhgyxrdrxsx";
+
 //VALIDATION OF USER INPUTS PREREQUISITES
 const registerSchema = Joi.object({
   fname: Joi.string().min(3).required(),
@@ -21,10 +23,10 @@ const registerSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
-//SIGNUP USER
+//##############################################################
+//#####################SIGNUP USER#############################
 router.post("/register", async (req, res) => {
-  const b = req.body;
-  console.log(b);
+  const response = { success: false, result: {}, message: "" };
 
   //CHECKING IF USER EMAIL ALREADY EXISTS
   const emailExist = await User.findOne({ email: req.body.email });
@@ -61,11 +63,16 @@ router.post("/register", async (req, res) => {
       //NEW USER IS ADDED
 
       const saveUser = await user.save();
-      res.status(200).send("user created");
+    }
+    if (user) {
+      response.success = true;
+      response.result = user;
     }
   } catch (error) {
-    res.status(500).send(error);
+    response.success = false;
+    response.result = error.message;
   }
+  res.json(response);
 });
 
 const loginSchema = Joi.object({
@@ -76,27 +83,36 @@ const loginSchema = Joi.object({
 //LOGIN USER
 
 router.post("/login", async (req, res) => {
+  const response = { success: false, result: {}, message: "" };
   //CHECKING IF USER EMAIL EXISTS
 
   const user = await User.findOne({ email: req.body.email });
   if (!user) return res.status(400).send("Incorrect Email- ID");
 
   //CHECKING IF USER PASSWORD MATCHES
-
+   
   const validPassword = await bcrypt.compare(req.body.password, user.password);
   if (!validPassword) return res.status(400).send("Incorrect Password");
 
   try {
     //VALIDATION OF USER INPUTS
-
+    console.log("======lllllllll===========");
     const { error } = await loginSchema.validateAsync(req.body);
+    console.log(error);
     if (error) return res.status(400).send(error.details[0].message);
+
     else {
       //SENDING BACK THE TOKEN
-      const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-      res.header("auth-token", token).send(token);
+      const token = jwt.sign({ _id: user._id }, TOKEN_SECRET);
+      //const v =res.header("auth-token", token).send(token);
+      if (token) {
+        response.success = true;
+        response.result = token;
+      }
+      res.json(response);
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send(error);
   }
 });
