@@ -24,15 +24,8 @@ app.get("/", (req, res) => {
 });
 app.listen(PORT, () => console.log(`server is running on the =====> ${PORT}`));
 
-//CONNECTION TO DATABASE
-// mongoose.connect(
-//   process.env.DB_CONNECT,
-//   { useNewUrlParser: true, useUnifiedTopology: true },
-//   () => console.log("connected to db  ")
-// );
-
 const uri =
-  "mongodb+srv://sid1729:pandey1729@cluster0.rdgas0r.mongodb.net/?retryWrites=true&w=majority";
+  "mongodb+srv://sid:sid@cluster0.dbrwq10.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -40,9 +33,14 @@ const client = new MongoClient(uri, {
 });
 client.connect((err) => {
   const collection = client.db("test").collection("devices");
-    console.log(err);
   // perform actions on the collection object
   client.close();
+});
+
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "connection error: "));
+db.once("open", function () {
+  console.log("Connected successfully");
 });
 
 //MIDDLEWARE -> DISALBING CORS AND USED FOR JSON OUTPUT
