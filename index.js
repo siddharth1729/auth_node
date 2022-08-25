@@ -16,7 +16,7 @@ dotenv.config();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //DEFINIG PORT
-const PORT = process.env.PORT || 4002;
+const PORT = process.env.PORT || 4001;
 
 //Creating our server
 app.get("/", (req, res) => {
@@ -24,24 +24,25 @@ app.get("/", (req, res) => {
 });
 app.listen(PORT, () => console.log(`server is running on the =====> ${PORT}`));
 
-const uri =
-  "mongodb+srv://sid:sid@cluster0.dbrwq10.mongodb.net/?retryWrites=true&w=majority";
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverApi: ServerApiVersion.v1,
-});
-client.connect((err) => {
-  const collection = client.db("test").collection("devices");
-  // perform actions on the collection object
-  client.close();
-});
-
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error: "));
-db.once("open", function () {
-  console.log("Connected successfully");
-});
+try {
+  const uri =
+    "mongodb+srv://sid:sid@cluster0.dbrwq10.mongodb.net/?retryWrites=true&w=majority";
+  const connectionParams = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1,
+  };
+  mongoose
+    .connect(uri, connectionParams)
+    .then(() => {
+      console.log("Connected to database ");
+    })
+    .catch((err) => {
+      console.error(`Error connecting to the database. \n${err}`);
+    });
+} catch (error) {
+  console.log(error);
+}
 
 //MIDDLEWARE -> DISALBING CORS AND USED FOR JSON OUTPUT
 app.use(express.json(), cors());
