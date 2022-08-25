@@ -23,6 +23,7 @@ const registerSchema = Joi.object({
   lname: Joi.string().min(3).required(),
   email: Joi.string().min(6).required().email(),
   password: Joi.string().min(6).required(),
+  token: Joi.string().min(2).required(),
 });
 
 //###################################################################
@@ -38,6 +39,15 @@ router.post("/register", async (req, res) => {
     return;
   }
 
+  //GENERATING RANDOM TOKEN
+  generate = (payload) => {
+    const token = String(payload) + Math.random().toString(36).slice(2);
+    return token;
+  };
+
+  const tokenvalue = generate(TOKEN_SECRET);
+  console.log(tokenvalue);
+
   //HASHING THE PASSWORD
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -49,6 +59,7 @@ router.post("/register", async (req, res) => {
     lname: req.body.lname,
     email: req.body.email,
     password: hashedPassword,
+    token: tokenvalue,
   });
 
   try {
@@ -80,16 +91,32 @@ router.post("/register", async (req, res) => {
 const loginSchema = Joi.object({
   email: Joi.string().min(6).required().email(),
   password: Joi.string().min(6).required(),
+  token: Joi.string().min(2).required(),
 });
 
 //###################################################################
 //#####################   LOGIN USER    #############################
 router.post("/login", async (req, res) => {
   const response = { success: false, result: {}, message: "" };
+  console.log(req.body);
+
   //CHECKING IF USER EMAIL EXISTS
 
   const user = await User.findOne({ email: req.body.email });
+  console.log(user);
   if (!user) return res.status(400).send("Incorrect Email- ID");
+
+  //CHECKING IF TOKEN MATCHS
+
+  const bodytoken = req.body.token;
+  console.log(bodytoken);
+  if (bodytoken ==user.token ) {
+    console.log("good to go");
+  }else{
+    response.success = false;
+    response.message = "Token do not exist or do not match!";
+    return res.status(400).send("Incorrect token- ID");
+  }
 
   //CHECKING IF USER PASSWORD MATCHES
 

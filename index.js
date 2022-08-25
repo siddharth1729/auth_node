@@ -16,7 +16,7 @@ dotenv.config();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 //DEFINIG PORT
-const PORT =  4001;
+const PORT =  4006;
 
 //Creating our server
 app.get("/", (req, res) => {

@@ -29,6 +29,12 @@ const userSchema = new mongoose.Schema({
     max: 1024,
     min: 6,
   },
+  token: {
+    type: String,
+    required: true,
+    max: 1024,
+    min: 2,
+  },
   date: {
     type: Date,
     default: Date.now(),
